@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Diva!! 🎀</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@400;500;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pk1: #ffe4f0; --pk2: #ffc2db; --pk3: #ff91be;
+    --pk4: #ff5fa2; --pk5: #f7318a; --pk6: #d4166a;
+    --gold: #d4a847; --rosegold: #b76e79;
+    --dark: #0d0010;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: var(--dark); color: #fff;
+    overflow-x: hidden; min-height: 100vh;
+  }
+
+  /* ── CANVAS ── */
+  #starCanvas, #confettiCanvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; pointer-events: none;
+  }
+  #starCanvas { z-index: 0; }
+  #confettiCanvas { z-index: 100; }
+
+  /* ── REVEAL ANIMS ── */
+  .rv  { opacity:0; transform:translateY(40px);  transition:.8s ease; }
+  .rvL { opacity:0; transform:translateX(-50px); transition:.8s ease; }
+  .rvR { opacity:0; transform:translateX(50px);  transition:.8s ease; }
+  .rv.on,.rvL.on,.rvR.on { opacity:1; transform:none; }
+
+  /* ── HERO ── */
+  #hero {
+    position:relative; z-index:1; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:2rem 1.5rem;
+    background:radial-gradient(ellipse at 50% 0%, #4a0035 0%, #1a0020 50%, var(--dark) 100%);
+  }
+  .badge {
+    display:inline-block; padding:.4rem 1.4rem; border-radius:999px;
+    background:linear-gradient(135deg,var(--pk5),var(--rosegold));
+    font-size:.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+    margin-bottom:1.5rem; animation:pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(247,49,138,.5)} 50%{box-shadow:0 0 0 14px rgba(247,49,138,0)} }
+  .hero-title {
+    font-family:'Dancing Script',cursive;
+    font-size:clamp(2.8rem,9vw,6rem); line-height:1.05;
+    background:linear-gradient(135deg,#ff91be,#fff,#ffc2db,#d4a847);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    background-size:200% auto; animation:shimmer 3s linear infinite; margin-bottom:.5rem;
+  }
+  .hero-name {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(1.3rem,4.5vw,2.8rem); font-weight:700;
+    color:var(--pk2); letter-spacing:.05em; margin-bottom:1rem;
+    text-shadow:0 0 30px rgba(255,145,190,.6);
+  }
+  .hero-sub { font-size:.95rem; color:var(--pk3); letter-spacing:.1em; margin-bottom:2rem; }
+  .typer-wrap { font-size:clamp(.9rem,2.5vw,1.1rem); color:var(--pk1); max-width:600px; line-height:1.9; margin-bottom:2.5rem; min-height:4em; }
+  #typer { border-right:2px solid var(--pk4); }
+  .btn-main {
+    display:inline-flex; align-items:center; gap:.5rem;
+    background:linear-gradient(135deg,var(--pk5),var(--pk6));
+    color:#fff; padding:.85rem 2rem; border-radius:999px; border:none;
+    font-family:'Quicksand',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; text-decoration:none;
+    box-shadow:0 4px 20px rgba(247,49,138,.45); transition:transform .2s,box-shadow .2s;
+  }
+  .btn-main:hover { transform:translateY(-3px) scale(1.03); box-shadow:0 8px 30px rgba(247,49,138,.6); }
+  @keyframes shimmer { 0%{background-position:0% center} 100%{background-position:200% center} }
+  .floater { position:absolute; pointer-events:none; animation:floatUp linear infinite; }
+  @keyframes floatUp { 0%{transform:translateY(0) rotate(0deg);opacity:0} 10%{opacity:.8} 90%{opacity:.5} 100%{transform:translateY(-100vh) rotate(360deg);opacity:0} }
+
+  /* ── SECTION ── */
+  .section { position:relative; z-index:1; padding:5rem 1.5rem; }
+  .s-title { font-family:'Dancing Script',cursive; font-size:clamp(1.8rem,5.5vw,3.2rem); background:linear-gradient(135deg,var(--pk3),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; text-align:center; margin-bottom:.4rem; }
+  .s-sub { text-align:center; color:var(--pk4); font-size:.88rem; letter-spacing:.08em; margin-bottom:2.5rem; }
+
+  /* ── COUNTDOWN ── */
+  #s-countdown { background:linear-gradient(180deg,var(--dark),#1e0030,var(--dark)); }
+  .cd-grid { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+  .cd-box { background:linear-gradient(145deg,rgba(247,49,138,.15),rgba(212,22,106,.08)); border:1px solid rgba(247,49,138,.3); border-radius:16px; padding:1.2rem 1.5rem; min-width:80px; text-align:center; transition:transform .3s; }
+  .cd-box:hover { transform:translateY(-4px); }
+  .cd-num { font-family:'Playfair Display',serif; font-size:clamp(2rem,6vw,3.5rem); font-weight:700; color:var(--pk3); line-height:1; display:block; text-shadow:0 0 20px rgba(255,145,190,.5); }
+  .cd-label { font-size:.68rem; text-transform:uppercase; letter-spacing:.12em; color:var(--pk4); margin-top:.4rem; display:block; }
+  .bday-big { font-family:'Dancing Script',cursive; font-size:clamp(2rem,7vw,4rem); background:linear-gradient(135deg,var(--gold),var(--pk3),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; background-size:200% auto; animation:shimmer 2s linear infinite; display:none; text-align:center; margin-bottom:1rem; }
+
+  /* ── DUO PHOTO ── */
+  #s-photos { background:linear-gradient(180deg,var(--dark),#2a0040,var(--dark)); }
+  .duo-frame { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:780px; margin:0 auto; }
+  @media(max-width:580px){ .duo-frame{grid-template-columns:1fr;max-width:300px} }
+  .photo-card {
+    position:relative; border-radius:22px; overflow:hidden; aspect-ratio:3/4;
+    border:2px solid rgba(247,49,138,.4); box-shadow:0 0 40px rgba(247,49,138,.2);
+    background:linear-gradient(145deg,#2a0030,#1a0025);
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    animation:glowPulse 2.5s ease-in-out infinite;
+  }
+  @keyframes glowPulse { 0%,100%{box-shadow:0 0 20px rgba(247,49,138,.2)} 50%{box-shadow:0 0 55px rgba(247,49,138,.5),0 0 80px rgba(212,168,71,.2)} }
+  .photo-card img { width:100%; height:100%; object-fit:cover; object-position:top center; display:block; transition:transform .5s; }
+  .photo-card:hover img { transform:scale(1.04); }
+  .photo-card::after { content:''; position:absolute; inset:0; background:linear-gradient(to top,rgba(30,0,40,.78) 0%,transparent 55%); pointer-events:none; }
+  .photo-label { position:absolute; bottom:0; left:0; right:0; z-index:2; padding:1.2rem; text-align:center; font-family:'Dancing Script',cursive; font-size:1.35rem; color:var(--pk2); text-shadow:0 2px 8px rgba(0,0,0,.9); }
+  .photo-label small { display:block; font-family:'Quicksand',sans-serif; font-size:.7rem; color:var(--pk3); letter-spacing:.07em; margin-top:.2rem; }
+  /* placeholder when no img */
+  .ph-inner { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; padding:2rem; text-align:center; width:100%; height:100%; }
+  .ph-icon { font-size:3.5rem; }
+  .ph-name { font-family:'Dancing Script',cursive; font-size:1.7rem; color:var(--pk2); }
+  .ph-note { color:var(--pk4); font-size:.73rem; line-height:1.7; }
+
+  /* heart between cards */
+  #heartConn { display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:10; font-size:2rem; animation:hb 1.2s ease-in-out infinite; }
+  @keyframes hb { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-50%) scale(1.45)} }
+
+  /* ── JAEMIN ── */
+  #s-jaemin { background:linear-gradient(180deg,var(--dark),#1e0030,var(--dark)); }
+  .j-wrap { max-width:700px; margin:0 auto; }
+  .j-quote { background:linear-gradient(135deg,rgba(247,49,138,.1),rgba(212,22,106,.05)); border-left:3px solid var(--pk5); padding:1.2rem 1.5rem; border-radius:0 14px 14px 0; margin-top:1.5rem; color:var(--pk2); font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(1rem,3vw,1.2rem); line-height:1.7; }
+  .j-quote cite { display:block; margin-top:.6rem; font-style:normal; font-size:.78rem; color:var(--pk4); font-family:'Quicksand',sans-serif; }
+  .badge-row { display:flex; flex-wrap:wrap; gap:.5rem; margin:1.2rem 0; }
+  .pill { display:inline-flex; align-items:center; background:rgba(247,49,138,.12); border:1px solid rgba(247,49,138,.3); padding:.3rem .9rem; border-radius:999px; font-size:.82rem; color:var(--pk3); font-weight:600; }
+  .info-p { color:var(--pk1); line-height:1.95; font-size:.97rem; margin-bottom:1rem; }
+
+  /* ── MESSAGE ── */
+  #s-msg { background:linear-gradient(180deg,var(--dark),#2a0040,var(--dark)); }
+  .letter { max-width:680px; margin:0 auto; background:linear-gradient(145deg,rgba(255,228,240,.06),rgba(247,49,138,.03)); border:1px solid rgba(247,49,138,.2); border-radius:20px; padding:2.5rem; position:relative; overflow:hidden; }
+  .letter::before { content:'💌'; font-size:7rem; position:absolute; right:-1rem; bottom:-2rem; opacity:.05; line-height:1; }
+  .letter p { color:var(--pk1); line-height:2; font-size:.98rem; margin-bottom:1rem; }
+  .letter .sign { text-align:right; font-family:'Dancing Script',cursive; font-size:1.4rem; color:var(--pk3); margin-top:1.5rem; }
+  .wish-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1rem; max-width:800px; margin:2rem auto; }
+  .wish-card { background:rgba(247,49,138,.08); border:1px solid rgba(247,49,138,.18); border-radius:16px; padding:1.4rem 1rem; text-align:center; transition:transform .3s,box-shadow .3s; }
+  .wish-card:hover { transform:translateY(-5px); box-shadow:0 8px 25px rgba(247,49,138,.2); }
+  .wish-card .ico { font-size:1.8rem; margin-bottom:.7rem; display:block; }
+  .wish-card h3 { color:var(--pk2); font-size:.92rem; margin-bottom:.3rem; }
+  .wish-card p { color:var(--pk4); font-size:.78rem; line-height:1.5; }
+
+  /* ── ZODIAC ── */
+  #s-zodiac { background:linear-gradient(180deg,var(--dark),#1e0030,var(--dark)); }
+  .zodiac-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1.5rem; max-width:880px; margin:0 auto 2rem; }
+  .z-card { background:linear-gradient(145deg,rgba(212,168,71,.1),rgba(247,49,138,.06)); border:1px solid rgba(212,168,71,.22); border-radius:20px; padding:2rem 1.5rem; text-align:center; transition:transform .35s,box-shadow .35s; }
+  .z-card:hover { transform:translateY(-6px) scale(1.02); box-shadow:0 12px 35px rgba(212,168,71,.18); }
+  .z-sym { font-size:2.8rem; margin-bottom:.8rem; display:block; }
+  .z-name { font-family:'Playfair Display',serif; font-size:1.25rem; color:var(--gold); margin-bottom:.3rem; }
+  .z-type { font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--pk4); margin-bottom:.9rem; }
+  .z-desc { font-size:.83rem; color:var(--pk1); line-height:1.7; }
+  .trait-pill { display:inline-block; background:rgba(247,49,138,.15); border:1px solid rgba(247,49,138,.25); border-radius:999px; padding:.22rem .7rem; font-size:.73rem; color:var(--pk3); margin:.2rem; }
+
+  /* ── SLIDESHOW ── */
+  #s-slide { background:linear-gradient(180deg,var(--dark),#2a0040,var(--dark)); }
+  .ss-wrap { max-width:370px; margin:0 auto; position:relative; }
+  .slide { display:none; border-radius:20px; overflow:hidden; border:2px solid rgba(247,49,138,.4); box-shadow:0 0 40px rgba(247,49,138,.2); aspect-ratio:3/4; background:linear-gradient(145deg,#2a0030,#1a0025); align-items:center; justify-content:center; flex-direction:column; }
+  .slide.active { display:flex; animation:slideIn .6s ease; }
+  @keyframes slideIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
+  .slide-cap { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent,rgba(20,0,30,.9)); padding:2rem 1.5rem 1.5rem; font-family:'Dancing Script',cursive; font-size:1.25rem; color:var(--pk2); text-shadow:0 2px 4px rgba(0,0,0,.8); }
+  .dots { display:flex; gap:.5rem; justify-content:center; margin-top:1rem; }
+  .dot { width:8px; height:8px; border-radius:50%; background:rgba(247,49,138,.3); border:none; cursor:pointer; transition:all .3s; padding:0; }
+  .dot.on { background:var(--pk4); transform:scale(1.35); }
+  .ss-nav { display:flex; gap:1rem; justify-content:center; margin-top:1rem; }
+  .ss-btn { background:rgba(247,49,138,.15); border:1px solid rgba(247,49,138,.3); color:var(--pk3); padding:.5rem 1.2rem; border-radius:999px; cursor:pointer; font-size:1.2rem; transition:all .3s; }
+  .ss-btn:hover { background:rgba(247,49,138,.3); transform:scale(1.05); }
+
+  /* ── FW BTN ── */
+  .fw-section { text-align:center; padding:2.5rem 1.5rem; position:relative; z-index:1; }
+  .fw-btn { display:inline-flex; align-items:center; gap:.6rem; background:linear-gradient(135deg,var(--rosegold),var(--gold),var(--pk5)); background-size:200% auto; color:#fff; padding:1rem 2.5rem; border-radius:999px; border:none; font-family:'Quicksand',sans-serif; font-size:1.05rem; font-weight:700; cursor:pointer; animation:shimmer 3s linear infinite; box-shadow:0 4px 20px rgba(212,168,71,.35); transition:transform .2s,box-shadow .2s; }
+  .fw-btn:hover { transform:scale(1.06); box-shadow:0 8px 30px rgba(212,168,71,.5); }
+
+  /* ── FOOTER ── */
+  footer { position:relative; z-index:1; text-align:center; padding:3rem 1.5rem; background:linear-gradient(180deg,var(--dark),#000); border-top:1px solid rgba(247,49,138,.15); }
+  footer .f-name { font-family:'Dancing Script',cursive; font-size:1.9rem; color:var(--pk3); margin-bottom:.5rem; }
+  footer p { color:var(--pk4); font-size:.88rem; line-height:1.8; }
+  .spin { display:inline-block; animation:hb2 1.2s ease-in-out infinite; }
+  @keyframes hb2 { 0%,100%{transform:scale(1)} 50%{transform:scale(1.4)} }
+
+  /* ── MUSIC ── */
+  .music-btn { position:fixed; bottom:1.5rem; right:1.5rem; z-index:200; width:50px; height:50px; border-radius:50%; background:linear-gradient(135deg,var(--pk5),var(--pk6)); border:none; cursor:pointer; font-size:1.3rem; box-shadow:0 4px 15px rgba(247,49,138,.4); display:flex; align-items:center; justify-content:center; transition:transform .2s; }
+  .music-btn:hover { transform:scale(1.12); }
+  .music-btn.playing { animation:muspin 2s linear infinite; }
+  @keyframes muspin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
+  .music-btn.playing:hover { animation-play-state:paused; }
+
+  /* ── OVERLAY ── */
+  #bday-overlay { display:none; position:fixed; inset:0; z-index:300; background:rgba(0,0,0,.88); flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem; }
+  #bday-overlay h1 { font-family:'Dancing Script',cursive; font-size:clamp(2.5rem,10vw,6rem); background:linear-gradient(135deg,var(--gold),var(--pk3),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; background-size:200% auto; animation:shimmer 2s linear infinite; margin-bottom:1rem; }
+  #bday-overlay p { color:var(--pk2); font-size:1.05rem; margin-bottom:2rem; line-height:1.9; }
+  #bday-overlay button { background:linear-gradient(135deg,var(--pk5),var(--pk6)); border:none; color:#fff; padding:.85rem 2rem; border-radius:999px; font-size:1rem; cursor:pointer; font-family:'Quicksand',sans-serif; font-weight:700; }
+
+  /* ── GLITTER ── */
+  .glitter { position:fixed; pointer-events:none; z-index:150; border-radius:50%; animation:gfade 1s ease-out forwards; }
+  @keyframes gfade { 0%{opacity:1;transform:scale(1) rotate(0)} 100%{opacity:0;transform:scale(0) rotate(180deg)} }
+
+  @media(max-width:480px){ .cd-box{padding:.8rem 1rem;min-width:65px} .letter{padding:1.5rem} .wish-grid{grid-template-columns:1fr 1fr} .zodiac-grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<canvas id="starCanvas"></canvas>
+<canvas id="confettiCanvas"></canvas>
+
+<!-- Overlay: muncul kalau dibuka tanggal 16-17 Mei 2026 -->
+<div id="bday-overlay">
+  <h1>🎉 HAPPY BIRTHDAY!! 🎉</h1>
+  <p>Gilak, udah 23 tahun aja si Diva!! 😭🎂<br>
+     Ultahnya kemarin, tapi surprisenya baru bisa sekarang!<br>
+     Semoga kamu makin bersinar dan bahagia ya bestie!! 🌸<br>
+     <em style="font-size:.9rem;color:var(--pk4)">— ada surprise di dalem, buka yuk! 🎁 —</em></p>
+  <button onclick="document.getElementById('bday-overlay').style.display='none';launchConfetti();createFireworks()">
+    Gaskeun Surprise-nya!! ✨
+  </button>
+</div>
+
+<button class="music-btn" id="musicBtn" title="Music on/off">🎵</button>
+<audio id="bgMusic" loop>
+  <source src="videoplayback.mp3" type="audio/mpeg">
+</audio>
+
+<!-- ══════════ HERO ══════════ -->
+<section id="hero">
+  <div id="floaters"></div>
+  <div class="badge">🎀 Surprise Spesial Buat Kamu 🎀</div>
+  <h1 class="hero-title">Happy Birthday!!</h1>
+  <p class="hero-name">DIVA MUKHLISSA SAHARANI</p>
+  <p class="hero-sub">✨ 16 Mei 2003 — 23 Tahun Udah Lewat, Masih Bersinar! ✨</p>
+  <div class="typer-wrap"><span id="typer"></span></div>
+  <a href="#s-countdown" class="btn-main">Lihat Surprise-nya 🎁</a>
+</section>
+
+<!-- ══════════ COUNTDOWN ══════════ -->
+<section id="s-countdown" class="section">
+  <p class="s-sub">— udah siap belum nih? —</p>
+  <h2 class="s-title rv">Hari Ultah Diva!!</h2>
+  <div class="cd-grid rv" id="cdGrid">
+    <div class="cd-box"><span class="cd-num" id="cd-d">0</span><span class="cd-label">Hari</span></div>
+    <div class="cd-box"><span class="cd-num" id="cd-h">0</span><span class="cd-label">Jam</span></div>
+    <div class="cd-box"><span class="cd-num" id="cd-m">0</span><span class="cd-label">Menit</span></div>
+    <div class="cd-box"><span class="cd-num" id="cd-s">0</span><span class="cd-label">Detik</span></div>
+  </div>
+  <div class="bday-big" id="bdayBig">🎂 SELAMAT ULTAH DIVA!! 🎂</div>
+  <p class="s-sub" id="cdCaption" style="margin-top:1rem">Nunggu 16 Mei 2026… hampir nih!</p>
+</section>
+
+<!-- ══════════ DUO PHOTO ══════════ -->
+<section id="s-photos" class="section">
+  <p class="s-sub rv">— duo yang epic banget —</p>
+  <h2 class="s-title rv">Jaemin & Diva 💕</h2>
+  <p style="text-align:center;color:var(--pk3);font-size:.88rem;margin-bottom:2.5rem;" class="rv">
+    The ultimate fan meets her fave idol 😂✨
+  </p>
+
+  <div style="position:relative;max-width:780px;margin:0 auto">
+    <div id="heartConn">💕</div>
+    <div class="duo-frame">
+
+      <!--
+      ╔══════════════════════════════════════════════╗
+      ║  CARA GANTI FOTO JAEMIN:                    ║
+      ║  1. Cari foto Jaemin di Google/Pinterest    ║
+      ║  2. Klik kanan foto → "Copy image address"  ║
+      ║  3. Ganti tulisan GANTI_URL_FOTO_JAEMIN     ║
+      ║     di bawah dengan URL yang kamu copy       ║
+      ╚══════════════════════════════════════════════╝
+      -->
+      <div class="photo-card rvL">
+        <img
+          src="jaemin.jpg"
+          alt="Na Jaemin NCT"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="ph-inner" style="display:none">
+          <div class="ph-icon">🌟</div>
+          <div class="ph-name">Na Jaemin</div>
+          <div class="ph-note">나재민 · NCT Dream<br><br><span style="color:var(--pk5);font-size:.85rem">💡 Ganti src= di tag img ini<br>dengan URL foto Jaemin favoritmu!</span></div>
+        </div>
+        <div class="photo-label">
+          Na Jaemin 나재민
+          <small>NCT Dream · Idola Diva 💕</small>
+        </div>
+      </div>
+
+      <!--
+      ╔══════════════════════════════════════════════╗
+      ║  CARA GANTI FOTO DIVA:                      ║
+      ║  OPSI A – foto online:                      ║
+      ║    Ganti GANTI_FOTO_DIVA dengan URL foto     ║
+      ║  OPSI B – foto dari HP/laptop:              ║
+      ║    1. Taruh foto di folder yang sama         ║
+      ║       dengan file HTML ini                   ║
+      ║    2. Ganti GANTI_FOTO_DIVA dengan           ║
+      ║       nama file, mis: foto-diva.jpg          ║
+      ╚══════════════════════════════════════════════╝
+      -->
+      <div class="photo-card rvR">
+        <img
+          src="dipa.jpg"
+          alt="Diva Mukhlissa Saharani"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="ph-inner" style="display:none">
+          <div class="ph-icon">🎀</div>
+          <div class="ph-name">Diva</div>
+          <div class="ph-note">Mukhlissa Saharani<br><br><span style="color:var(--pk5);font-size:.85rem">💡 Ganti src= di tag img ini<br>dengan foto Diva ya bestie!</span></div>
+        </div>
+        <div class="photo-label">
+          Diva Mukhlissa Saharani
+          <small>Birthday Girl · 16 Mei 2003 🎂</small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ JAEMIN INFO ══════════ -->
+<section id="s-jaemin" class="section">
+  <p class="s-sub rv">— buat si Czennie sejati —</p>
+  <h2 class="s-title rv">Jaemin, Idola Diva 🌙</h2>
+
+  <div class="j-wrap rv">
+    <div class="badge-row">
+      <span class="pill">🎤 NCT Dream</span>
+      <span class="pill">💫 NCT 127</span>
+      <span class="pill">🕺 NCT JNJM</span>
+      <span class="pill">📸 Visual King</span>
+      <span class="pill">🎨 Performer</span>
+    </div>
+
+    <p class="info-p">Eh Diva, ngefans sama Jaemin itu literally pilihan paling bagus yang pernah kamu buat 😂 Siapa yang nggak mau jadi fans-nya seseorang yang tampan, berbakat, <em>dan</em> ternyata di 2026 ini udah debut juga bareng Jeno di NCT JNJM?? Dia terus berkembang dan makin bersinar — persis kayak kamu! ✨</p>
+
+    <p class="info-p">Di momen ultah kamu ini, semoga energi Jaemin yang selalu semangat dan all-out dalam segala hal bisa ikut nular ke kamu juga ya. Kamu deserve yang terbaik seperti idolamu! 💕</p>
+
+    <div class="j-quote">
+      "생일 축하해요, Diva~! 오늘도 예쁘게 빛나세요! ✨<br>
+      <span style="font-size:.85em;color:var(--pk3);font-style:normal">
+        (Saengil chukahaeyo, Diva! Semoga kamu tetap bersinar cantik!)
+      </span>"
+      <cite>— Kalau Jaemin bisa ngucapin langsung ke kamu 😭💕</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MESSAGE ══════════ -->
+<section id="s-msg" class="section">
+  <p class="s-sub rv">— surat dari bestie —</p>
+  <h2 class="s-title rv">Pesan Buat Diva 💌</h2>
+
+  <div class="letter rv">
+    <p>Hei Diva!! 👋</p>
+    <p>Iya, ultahmu emang kemarin tanggal 16 — tapi perayaannya baru bisa dimulai sekarang! Dan tau nggak, itu nggak ngurangin betapa spesialnya kamu sama sekali 🥹</p>
+    <p>Udah 23 tahun, gilak! Dari yang mungkin dulu masih awkward nge-fangirl sendirian, sekarang kamu udah jadi versi diri kamu yang jauh lebih keren, lebih tangguh, dan tetap setia sama NCT Dream sampai sekarang 😂❤️</p>
+    <p>Semoga di tahun ke-23 ini, semua yang kamu kejar mulai nyata satu per satu. Semoga kamu dikelilingi orang-orang yang tulus, dijauhkan dari hal-hal yang bikin capek hati, dan dikasih banyak alasan buat senyum setiap harinya. 🌸</p>
+    <p>Kamu tuh bintang Taurus yang genuine, artistik kayak shio Kambing, dan punya ambisi segede life path 8 — kombinasi yang honestly keren banget! Manfaatin itu semua ya, Diva!</p>
+    <p>Happy belated birthday!! Wish you all the best things in the universe! 🥳✨</p>
+    <div class="sign">Dengan cinta yang nggak kalah sama fans Jaemin 💕</div>
+  </div>
+
+  <div class="wish-grid rv">
+    <div class="wish-card"><span class="ico">🌸</span><h3>Kebahagiaan</h3><p>Hidup kamu semoga penuh senyum yang genuine, bukan yang dipaksain</p></div>
+    <div class="wish-card"><span class="ico">⭐</span><h3>Karir & Mimpi</h3><p>Semua yang lagi kamu kejar semoga mulai keliatan hasilnya!</p></div>
+    <div class="wish-card"><span class="ico">💪</span><h3>Kesehatan</h3><p>Sehat terus ya fisik sama mentalnya, jangan lupa istirahat!</p></div>
+    <div class="wish-card"><span class="ico">💕</span><h3>Orang Baik</h3><p>Semoga dikelilingin orang yang tulus sayang sama kamu</p></div>
+    <div class="wish-card"><span class="ico">🎵</span><h3>NCT Comeback</h3><p>Semoga NCT Dream terus aktif dan kasih banyak konten! 😂</p></div>
+    <div class="wish-card"><span class="ico">✨</span><h3>Jadi Diri Sendiri</h3><p>Semoga makin pede jadi versi terbaik dari kamu sendiri</p></div>
+  </div>
+</section>
+
+<!-- ══════════ ZODIAC ══════════ -->
+<section id="s-zodiac" class="section">
+  <p class="s-sub rv">— siapa sebenernya si Diva? —</p>
+  <h2 class="s-title rv">Profil Kosmik Diva 🔮</h2>
+
+  <div class="zodiac-grid">
+    <div class="z-card rv">
+      <span class="z-sym">♉</span>
+      <div class="z-name">Taurus</div>
+      <div class="z-type">Zodiak · Lahir 16 Mei</div>
+      <p class="z-desc">Taurus itu orangnya setia, tekun, dan punya standar tinggi buat diri sendiri. Kamu tau apa yang kamu mau dan nggak gampang goyah — itu kekuatan banget!</p>
+      <div style="margin-top:.8rem"><span class="trait-pill">Setia</span><span class="trait-pill">Tekun</span><span class="trait-pill">Elegan</span><span class="trait-pill">Stubborn (positif!)</span></div>
+    </div>
+    <div class="z-card rv" style="transition-delay:.1s">
+      <span class="z-sym">🐐</span>
+      <div class="z-name">Shio Kambing</div>
+      <div class="z-type">Tahun 2003</div>
+      <p class="z-desc">Shio Kambing identik sama jiwa seni, empati yang dalam, dan cara pandang yang unik. Kamu punya sensitifitas yang bikin kamu bisa connect sama hal-hal yang orang lain skip.</p>
+      <div style="margin-top:.8rem"><span class="trait-pill">Kreatif</span><span class="trait-pill">Empati</span><span class="trait-pill">Artistik</span><span class="trait-pill">Peka</span></div>
+    </div>
+    <div class="z-card rv" style="transition-delay:.2s">
+      <span class="z-sym">8️⃣</span>
+      <div class="z-name">Life Path 8</div>
+      <div class="z-type">1+6+5+2+0+0+3 = 17 → 8</div>
+      <p class="z-desc">Angka 8 itu simbol kekuatan, kepemimpinan, dan ambisi. Kamu literally dilahirin buat achieve hal-hal besar. Tinggal percaya sama prosesnya aja!</p>
+      <div style="margin-top:.8rem"><span class="trait-pill">Ambisius</span><span class="trait-pill">Leader</span><span class="trait-pill">Kuat</span><span class="trait-pill">Visioner</span></div>
+    </div>
+  </div>
+
+  <div style="max-width:600px;margin:0 auto;text-align:center;color:var(--pk3);font-size:.88rem;line-height:1.85;background:rgba(247,49,138,.05);border-radius:16px;padding:1.5rem;border:1px solid rgba(247,49,138,.15)" class="rv">
+    <strong style="color:var(--gold)">✨ Kesimpulan Kosmik:</strong><br>
+    Taurus + Shio Kambing + Life Path 8 = gabungan antara kehangatan, kreativitas, dan kekuatan. Bro, langit literally udah setup kamu buat jadi orang yang luar biasa. Tinggal jalan aja, Diva! 🚀
+  </div>
+</section>
+
+<!-- ══════════ SLIDESHOW ══════════ -->
+<section id="s-slide" class="section" style="text-align:center">
+  <p class="s-sub rv">— galeri spesial —</p>
+  <h2 class="s-title rv">Untuk Czennie Paling Setia 🌸</h2>
+
+  <div class="ss-wrap rv">
+    <div class="slide active">
+      <div class="ph-inner" style="gap:1.2rem">
+        <div style="font-size:4.5rem">🎂</div>
+        <div style="font-family:'Dancing Script',cursive;font-size:2rem;color:var(--pk2)">Birthday Girl!</div>
+        <div style="color:var(--pk3);font-size:.95rem">Diva Mukhlissa Saharani</div>
+        <div style="color:var(--pk4);font-size:.82rem">16 Mei 2003 · 23 tahun gilak!</div>
+      </div>
+      <div class="slide-cap">🎀 Selamat Ultah Diva!!</div>
+    </div>
+    <div class="slide">
+      <div class="ph-inner" style="gap:1.2rem">
+        <div style="font-size:4.5rem">🌟</div>
+        <div style="font-family:'Dancing Script',cursive;font-size:2rem;color:var(--gold)">Na Jaemin</div>
+        <div style="color:var(--pk3);font-size:.9rem">나재민 · NCT Dream · NCT JNJM</div>
+        <div style="color:var(--pk4);font-size:.8rem">"Idolamu yang terus bersinar" 💕</div>
+      </div>
+      <div class="slide-cap">💫 Untuk Czennie paling setia!</div>
+    </div>
+    <div class="slide">
+      <div class="ph-inner" style="gap:1.2rem">
+        <div style="font-size:4.5rem">🔮</div>
+        <div style="font-family:'Dancing Script',cursive;font-size:1.8rem;color:var(--pk2)">Taurus ♉</div>
+        <div style="color:var(--pk3);font-size:.9rem">Shio Kambing · Life Path 8</div>
+        <div style="color:var(--gold);font-size:.8rem">"Udah keliatan dari bintangnya!" ✨</div>
+      </div>
+      <div class="slide-cap">🌙 Profil bintang Diva</div>
+    </div>
+    <div class="slide">
+      <div class="ph-inner" style="gap:1.2rem">
+        <div style="font-size:3rem">🎊 💕 🎁</div>
+        <div style="font-family:'Dancing Script',cursive;font-size:1.7rem;color:var(--pk2)">Semoga makin bahagia!</div>
+        <div style="color:var(--pk3);font-size:.9rem">Di usia 23 yang keren ini</div>
+        <div style="color:var(--pk4);font-size:.8rem">Saranghae Diva!! 💕</div>
+      </div>
+      <div class="slide-cap">💕 Happy Belated 23rd, Bestie!</div>
+    </div>
+  </div>
+
+  <div class="dots rv" id="dots"></div>
+  <div class="ss-nav rv">
+    <button class="ss-btn" onclick="changeSlide(-1)">◀</button>
+    <button class="ss-btn" onclick="changeSlide(1)">▶</button>
+  </div>
+</section>
+
+<!-- FW BTN -->
+<div class="fw-section">
+  <button class="fw-btn rv" onclick="launchConfetti();createFireworks()">
+    🎆 Klik buat Kembang Api!! 🎇
+  </button>
+</div>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="f-name">Diva Mukhlissa Saharani</div>
+  <p>Telat sehari nggak masalah — ultah kamu tetap spesial banget! <span class="spin">💕</span></p>
+  <p style="color:var(--pk5);font-size:.78rem;margin-top:1rem">Made with 🩷 · Untuk Diva yang luar biasa · 16 Mei 2003</p>
+</footer>
+
+<!-- ══════════ SCRIPTS ══════════ -->
+<script>
+/* DATE CHECK */
+const now=new Date(), m=now.getMonth(), d=now.getDate();
+if(m===4&&(d===16||d===17)){
+  document.getElementById('bday-overlay').style.display='flex';
+}
+if(window.innerWidth>=580){
+  document.getElementById('heartConn').style.display='flex';
+}
+
+/* STARS */
+const sc=document.getElementById('starCanvas'),sx=sc.getContext('2d');
+let stars=[];
+function rsc(){sc.width=innerWidth;sc.height=innerHeight;}
+rsc();window.addEventListener('resize',rsc);
+for(let i=0;i<220;i++) stars.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.4+.3,a:Math.random(),da:(Math.random()-.5)*.015,dx:(Math.random()-.5)*.08,hue:Math.random()<.6?330:Math.random()<.5?300:45});
+function drawS(){sx.clearRect(0,0,sc.width,sc.height);stars.forEach(s=>{s.a+=s.da;if(s.a>1||s.a<0)s.da*=-1;s.x+=s.dx;if(s.x<0)s.x=sc.width;if(s.x>sc.width)s.x=0;sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle=`hsla(${s.hue},100%,80%,${s.a})`;sx.fill();});requestAnimationFrame(drawS);}
+drawS();
+
+/* CONFETTI */
+const cc=document.getElementById('confettiCanvas'),cx=cc.getContext('2d');
+cc.width=innerWidth;cc.height=innerHeight;
+window.addEventListener('resize',()=>{cc.width=innerWidth;cc.height=innerHeight;});
+let pieces=[];
+const pC=['#ff5fa2','#ff91be','#ffc2db','#d4a847','#fff','#b76e79','#ff3b7f','#ffd700'];
+function mkP(x,y){return{x:x??Math.random()*cc.width,y:y??-10,w:Math.random()*10+5,h:Math.random()*5+3,color:pC[Math.floor(Math.random()*pC.length)],vx:(Math.random()-.5)*5,vy:Math.random()*3+2,rot:Math.random()*360,rotV:(Math.random()-.5)*6,life:1};}
+function launchConfetti(fx,fy){for(let i=0;i<130;i++){const p=mkP(fx??Math.random()*cc.width,fy??-10);p.vy=Math.random()*5+2;p.vx=(Math.random()-.5)*9;pieces.push(p);}}
+function drawC(){cx.clearRect(0,0,cc.width,cc.height);pieces=pieces.filter(p=>p.life>0&&p.y<cc.height+20);pieces.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.rotV;p.vy+=.06;p.vx*=.99;p.life-=.004;cx.save();cx.translate(p.x,p.y);cx.rotate(p.rot*Math.PI/180);cx.globalAlpha=Math.max(0,p.life);cx.fillStyle=p.color;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore();});requestAnimationFrame(drawC);}
+drawC();
+function createFireworks(){for(let b=0;b<7;b++)setTimeout(()=>{const fx=Math.random()*cc.width,fy=Math.random()*cc.height*.6;for(let i=0;i<45;i++){const p=mkP(fx,fy),a=(Math.PI*2/45)*i,spd=Math.random()*6+3;p.vx=Math.cos(a)*spd;p.vy=Math.sin(a)*spd-4;p.life=.9;pieces.push(p);}},b*200);}
+
+/* TYPEWRITER */
+const msgs=["Selamat ultah (telat) sehari ya, Diva!! 🎂","Gilak, 23 tahun udah! Cepet banget 😭✨","Semoga Jaemin mampir di mimpi kamu malem ini 💕","Taurus + Shio Kambing + Life Path 8 = Diva yang amazing! ♉🌟","Happy 23rd Birthday, bestie!! Makin bersinar ya! 🎀"];
+let mi=0,ci=0,del=false;
+const tel=document.getElementById('typer');
+function type(){const cur=msgs[mi];if(!del){tel.textContent=cur.substring(0,++ci);if(ci===cur.length){del=true;setTimeout(type,2200);return;}setTimeout(type,65);}else{tel.textContent=cur.substring(0,--ci);if(ci===0){del=false;mi=(mi+1)%msgs.length;setTimeout(type,300);return;}setTimeout(type,30);}}
+type();
+
+/* COUNTDOWN */
+function updateCD(){
+  const diff=new Date('2026-05-16T00:00:00')-new Date();
+  if(diff<=0){
+    document.getElementById('cdGrid').style.display='none';
+    document.getElementById('bdayBig').style.display='block';
+    document.getElementById('cdCaption').textContent=diff<-86400000?'Ultahnya kemarin, tapi perayaannya sekarang! 🎉':'INI HARINYA, DIVA!! 🎉🎂';
+    return;
+  }
+  document.getElementById('cd-d').textContent=String(Math.floor(diff/86400000)).padStart(2,'0');
+  document.getElementById('cd-h').textContent=String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
+  document.getElementById('cd-m').textContent=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+  document.getElementById('cd-s').textContent=String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+}
+updateCD();setInterval(updateCD,1000);
+
+/* FLOATERS */
+const fem=['🌸','💕','⭐','🎀','✨','💖','🌷','🩷','💫','🎵','🪩','🌙'];
+function spawnF(){const el=document.createElement('div');el.className='floater';el.textContent=fem[Math.floor(Math.random()*fem.length)];el.style.cssText=`left:${Math.random()*100}%;bottom:0;font-size:${Math.random()*1.2+.8}rem;animation-duration:${Math.random()*8+6}s;animation-delay:${Math.random()*2}s`;document.getElementById('floaters').appendChild(el);setTimeout(()=>el.remove(),12000);}
+setInterval(spawnF,600);
+
+/* GLITTER */
+let lg=0;
+function spawnG(x,y){const g=document.createElement('div');g.className='glitter';const sz=Math.random()*8+4,hue=Math.random()<.6?330:45;g.style.cssText=`left:${x-sz/2}px;top:${y-sz/2}px;width:${sz}px;height:${sz}px;background:hsl(${hue},100%,75%);animation-duration:${Math.random()*.5+.5}s`;document.body.appendChild(g);setTimeout(()=>g.remove(),1000);}
+document.addEventListener('mousemove',e=>{const n=Date.now();if(n-lg<40)return;lg=n;spawnG(e.clientX,e.clientY);});
+document.addEventListener('touchmove',e=>{const t=e.touches[0];spawnG(t.clientX,t.clientY);},{passive:true});
+
+/* SLIDESHOW */
+let si=0;const slides=document.querySelectorAll('.slide'),dotsEl=document.getElementById('dots');
+slides.forEach((_,i)=>{const b=document.createElement('button');b.className='dot'+(i===0?' on':'');b.onclick=()=>goS(i);dotsEl.appendChild(b);});
+function goS(n){slides[si].classList.remove('active');document.querySelectorAll('.dot')[si].classList.remove('on');si=(n+slides.length)%slides.length;slides[si].classList.add('active');document.querySelectorAll('.dot')[si].classList.add('on');}
+function changeSlide(dir){goS(si+dir);}
+setInterval(()=>changeSlide(1),4000);
+
+/* SCROLL REVEAL */
+const obs=new IntersectionObserver(e=>e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('on');}),{threshold:.15});
+document.querySelectorAll('.rv,.rvL,.rvR').forEach(el=>obs.observe(el));
+
+/* MUSIC */
+const mBtn=document.getElementById('musicBtn'),aud=document.getElementById('bgMusic');
+let playing=false;
+mBtn.addEventListener('click',()=>{if(playing){aud.pause();mBtn.classList.remove('playing');mBtn.textContent='🎵';}else{aud.play().catch(()=>{});mBtn.classList.add('playing');mBtn.textContent='🎶';}playing=!playing;});
+
+/* INIT */
+setTimeout(()=>launchConfetti(),700);
+setTimeout(()=>launchConfetti(),2000);
+</script>
+</body>
+</html>
